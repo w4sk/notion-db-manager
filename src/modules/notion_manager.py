@@ -26,8 +26,12 @@ class NotionManager:
     def register_paper_info_by_path(self, path):
         try:
             print("Registering paper info by path...")
-            process = subprocess.run(f"papnt paths {path}", capture_output=True, text=True, check=True, shell=True)
+            process = subprocess.run(["papnt", "paths", path], capture_output=True, text=True, check=True)
             print(process.stdout)
             print(f"Succesfully registered paper info by path")
+        except subprocess.CalledProcessError as e:
+            print(f"Error: papnt command failed with return code {e.returncode}. Output: {e.stderr}")
+        except FileNotFoundError:
+            print(f"Error: papnt command not found. Is it installed and in your PATH?")
         except Exception as e:
-            print(f"Error: {e}")
+            print(f"An unexpected error occurred: {e}")

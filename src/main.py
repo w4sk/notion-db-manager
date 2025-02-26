@@ -1,9 +1,11 @@
 import os
+from dotenv import load_dotenv
 from modules.paper_analyzer import PaperAnalyzer
 from modules.notion_manager import NotionManager
 from modules.slack_messenger import SlackMessenger
 
 def main():
+    load_dotenv()
     paper_analyzer = PaperAnalyzer()
     slack_messenger = SlackMessenger()
     notion_manager = NotionManager()

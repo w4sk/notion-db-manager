@@ -1,0 +1,9 @@
+services:
+  app:
+    build: .
+    image: notion-db-manager
+    container_name: notion-db-manager-app
+    volumes:
+      - ./src:/app/src
+      - ./papers:/app/papers
+    command: python src/main.py
