@@ -1,9 +1,11 @@
+import os
 import subprocess
+from dotenv import load_dotenv
 
 
 class NotionManager:
     def __init__(self):
-        pass
+        self.notion_database_url = os.getenv("NOTION_DATABASE_URL")
 
     def register_paper_info_by_doi(self):
         try:
@@ -13,7 +15,7 @@ class NotionManager:
             print(f"Succesfully registered paper info by DOI")
         except Exception as e:
             print(f"Error: {e}")
-    
+
     def register_paper_info_by_pdf(self):
         try:
             print("Registering paper info by PDF...")
@@ -22,7 +24,7 @@ class NotionManager:
             print(f"Succesfully registered paper info by PDF")
         except Exception as e:
             print(f"Error: {e}")
-            
+
     def register_paper_info_by_path(self, path):
         try:
             print("Registering paper info by path...")
