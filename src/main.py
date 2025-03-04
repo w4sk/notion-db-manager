@@ -12,11 +12,14 @@ def main():
     notion_manager = NotionManager()
 
     new_files = paper_analyzer.get_paper_name()
+    if new_files:
+        print(f"New papers: {new_files}")
     for new_file in new_files:
-        new_file_path = os.path.join(paper_analyzer.paper_dir, new_file)
-        new_file_path = os.path.abspath(new_file_path)
-        notion_manager.register_paper_info_by_path(new_file_path)
-        slack_messenger.send_message(f"New paper: <{notion_manager.notion_database_url}|{new_file}>")
+        if new_file.endswith(".pdf"):
+            new_file_path = os.path.join(paper_analyzer.paper_dir, new_file)
+            new_file_path = os.path.abspath(new_file_path)
+            notion_manager.register_paper_info_by_path(new_file_path)
+            slack_messenger.send_message(f"New paper: <{notion_manager.notion_database_url}|{new_file}>")
 
 
 if __name__ == "__main__":
