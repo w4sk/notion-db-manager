@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from modules.paper_analyzer import PaperAnalyzer
 from modules.notion_manager import NotionManager
 from modules.slack_messenger import SlackMessenger
+from db.db_manager import DatabaseManager
 
 
 def main():
@@ -10,6 +11,13 @@ def main():
     paper_analyzer = PaperAnalyzer()
     slack_messenger = SlackMessenger()
     notion_manager = NotionManager()
+    db_manager = DatabaseManager()
+
+    notion_registered_paper_info_list = notion_manager.get_registered_paper_info()
+    for notion_registered_paper_info in notion_registered_paper_info_list:
+        is_exist = db_manager.check_paper_exists(paper_id=notion_registered_paper_info["id"])
+        if not is_exist:
+            db_manager.add_notion_db_paper_info(notion_registered_paper_info)
 
     new_files = paper_analyzer.get_paper_name()
     if new_files:
