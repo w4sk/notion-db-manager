@@ -34,3 +34,4 @@
 [misc]
     ; Directory to save bib files
     dir_save_bib = ''
+    registered_by = ''
