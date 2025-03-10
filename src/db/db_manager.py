@@ -41,9 +41,12 @@ class DatabaseManager:
             session.add(new_paper)
             print("Registered successfully")
 
-    def check_paper_exists(self, paper_id):
+    def check_paper_exists(self, paper_id=None, file_name=None):
         with self.session_scope() as session:
-            exists = session.query(NotionDB).filter_by(id=paper_id).first() is not None
+            if paper_id:
+                exists = session.query(NotionDB).filter_by(id=paper_id).first() is not None
+            elif file_name:
+                exists = session.query(NotionDB).filter_by(file_name=file_name).first() is not None
             return exists
 
 if __name__ == "__main__":

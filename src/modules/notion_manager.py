@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import os
 import subprocess
 
+
 class NotionManager:
     def __init__(self):
         load_dotenv()
@@ -40,28 +41,41 @@ class NotionManager:
             print(f"Error: papnt command not found. Is it installed and in your PATH?")
         except Exception as e:
             print(f"An unexpected error occurred: {e}")
-    
+
     def get_registered_paper_info(self):
         try:
             url = f"https://api.notion.com/v1/databases/{self.notion_database_id}/query"
             headers = {
                 "Authorization": f"Bearer {self.notion_token_id}",
                 "Content-Type": "application/json",
-                "Notion-Version": "2022-06-28"
+                "Notion-Version": "2022-06-28",
             }
-            
+
             response = requests.post(url, headers=headers)
             response.raise_for_status()
-            
+
             results = response.json()["results"]
             paper_info_list = []
             for result in results:
                 paper_info = {
-                    "id": result['id'],
-                    "created_time": result['created_time'],
-                    "last_edited_time": result['last_edited_time'],
-                    "title": result['properties']['Title']['rich_text'][0]['plain_text'] if result['properties']['Title']['rich_text'] else None,
-                    "doi": result['properties']['DOI']['rich_text'][0]['plain_text'] if result['properties']['DOI']['rich_text'] else None,
+                    "id": result["id"],
+                    "created_time": result["created_time"],
+                    "last_edited_time": result["last_edited_time"],
+                    "title": (
+                        result["properties"]["Title"]["rich_text"][0]["plain_text"]
+                        if result["properties"]["Title"]["rich_text"]
+                        else None
+                    ),
+                    "doi": (
+                        result["properties"]["DOI"]["rich_text"][0]["plain_text"]
+                        if result["properties"]["DOI"]["rich_text"]
+                        else None
+                    ),
+                    "file_name": (
+                        result["properties"]["file_name"]["rich_text"][0]["plain_text"]
+                        if result["properties"]["file_name"]["rich_text"]
+                        else None
+                    ),
                 }
                 paper_info_list.append(paper_info)
             return paper_info_list
