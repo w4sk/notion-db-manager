@@ -19,7 +19,6 @@ def main():
     slack_messenger = SlackMessenger()
     notion_manager = NotionManager()
     db_manager = DatabaseManager()
-    db_manager.init_database()
     
     sync_notion_db(notion_manager, db_manager)
 

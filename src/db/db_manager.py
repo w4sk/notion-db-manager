@@ -13,6 +13,7 @@ class DatabaseManager:
         load_dotenv()
         self.Session = sessionmaker(bind=engine)
         self.db_url = os.getenv("DATABASE_URL")
+        self.init_database()
 
     def init_database(self):
         if not database_exists(self.db_url):

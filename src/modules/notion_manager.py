@@ -1,7 +1,17 @@
-import requests
-from dotenv import load_dotenv
 import os
+import requests
 import subprocess
+from dotenv import load_dotenv
+
+from papnt.papnt.misc import load_config
+from papnt.papnt.database import Database, DatabaseInfo
+from papnt.papnt.mainfunc import (
+    add_records_from_local_pdfpath,
+    update_unchecked_records_from_doi,
+    update_unchecked_records_from_uploadedpdf,
+    make_bibfile_from_records,
+    make_abbrjson_from_bibpath,
+)
 
 
 class NotionManager:
@@ -10,6 +20,8 @@ class NotionManager:
         self.notion_database_url = os.getenv("NOTION_DATABASE_URL")
         self.notion_token_id = os.getenv("NOTION_TOKEN_ID")
         self.notion_database_id = os.getenv("NOTION_DATABASE_ID")
+        self.config = load_config("/usr/local/lib/python3.11/site-packages/papnt/config.ini")
+        self.database = Database(DatabaseInfo(path_config="/usr/local/lib/python3.11/site-packages/papnt/config.ini"))
 
     def register_paper_info_by_doi(self):
         try:
@@ -29,16 +41,12 @@ class NotionManager:
         except Exception as e:
             print(f"Error: {e}")
 
-    def register_paper_info_by_path(self, path):
+    def register_paper_info_by_path(self, paths):
         try:
             print("Registering paper info by path...")
-            process = subprocess.run(["papnt", "paths", path], capture_output=True, text=True, check=True)
-            print(process.stdout)
-            print(f"Succesfully registered paper info by path")
-        except subprocess.CalledProcessError as e:
-            print(f"Error: papnt command failed with return code {e.returncode}. Output: {e.stderr}")
-        except FileNotFoundError:
-            print(f"Error: papnt command not found. Is it installed and in your PATH?")
+            paths = paths.split(",") if "," in paths else [paths]
+            for path in paths:
+                add_records_from_local_pdfpath(self.database, self.config["propnames"], path, self.config["misc"]["registered_by"])
         except Exception as e:
             print(f"An unexpected error occurred: {e}")
 
