@@ -5,6 +5,7 @@ from slack_sdk import WebClient
 
 class SlackMessenger:
     def __init__(self):
+        load_dotenv()
         self.client = WebClient(token=os.getenv("SLACK_BOT_USER_OAUTH_TOKEN"))
         self.user_ids = os.getenv("SLACK_TARGET_USER_ID")
 

@@ -45,10 +45,16 @@ class NotionManager:
         try:
             print("Registering paper info by path...")
             paths = paths.split(",") if "," in paths else [paths]
+            results = {}
             for path in paths:
-                add_records_from_local_pdfpath(self.database, self.config["propnames"], path, self.config["misc"]["registered_by"])
+                result = add_records_from_local_pdfpath(
+                    self.database, self.config["propnames"], path, self.config["misc"]["registered_by"]
+                )
+                results.update(result)
+            return results
         except Exception as e:
             print(f"An unexpected error occurred: {e}")
+            return None
 
     def get_registered_paper_info(self):
         try:

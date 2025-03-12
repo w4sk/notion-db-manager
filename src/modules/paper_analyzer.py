@@ -16,7 +16,10 @@ class PaperAnalyzer:
         with os.scandir(self.paper_dir) as entries:
             for entry in entries:
                 if entry.is_file():
-                    file_time = entry.stat().st_mtime
-                    if file_time > threshold_time:
+                    try:
+                        file_time = entry.stat().st_birthtime
+                    except AttributeError:
+                        file_time = entry.stat().st_mtime
+                    if file_time >= threshold_time:
                         new_file.append(entry.name)
         return new_file
