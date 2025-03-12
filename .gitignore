@@ -176,3 +176,5 @@ cython_debug/
 config.ini
 
 papers/
+
+postgres_data/

@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   app:
     build: .
@@ -6,4 +8,26 @@ services:
     volumes:
       - ./src:/app/src
       - ./papers:/app/papers
-    command: python src/main.py
+    # command: python src/main.py
+    command: bash -c 'tail -f /dev/null'
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: always
+
+# If you want to use a database, uncomment the following lines
+  # db:
+  #   image: postgres:13
+  #   container_name: notion-db-manager-postgres
+  #   env_file:
+  #     - .env
+  #   volumes:
+  #     - ./postgres_data:/var/lib/postgresql/data
+  #   healthcheck:
+  #     test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #   ports:
+  #     - "15432:5432"
+  #   restart: always
