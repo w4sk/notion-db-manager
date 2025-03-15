@@ -28,11 +28,20 @@ class PaperHandler(FileSystemEventHandler):
                     if new_file.endswith(".pdf"):
                         new_file_path = os.path.join(self.paper_analyzer.paper_dir, new_file)
                         new_file_path = os.path.abspath(new_file_path)
-                        results = self.notion_manager.register_paper_info_by_path(new_file_path)
-                        for key, value in results.items():
+                        file_upload_result = self.slack_messenger.upload_file(
+                            file_path=new_file_path,
+                            title=new_file,
+                            initial_comment="Attempting to register the following paper",
+                            user_ids=[],
+                        )
+                        if file_upload_result["ok"]:
+                            pdf_url = file_upload_result["file"]["url_private"]
+                            print(f"Uploaded PDF URL: {pdf_url}")
+                        paper_register_results = self.notion_manager.register_paper_info_by_path(new_file_path, pdf_url)
+                        for key, value in paper_register_results.items():
                             if value:
                                 self.slack_messenger.send_message(
-                                    f"New paper: <{self.notion_manager.notion_database_url}|{key}>"
+                                    f"Successfully registered new paper in Notion: <{self.notion_manager.notion_database_url}|{key}>"
                                 )
                             else:
                                 self.slack_messenger.send_message(
