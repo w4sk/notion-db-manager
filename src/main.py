@@ -28,7 +28,8 @@ class PaperHandler(FileSystemEventHandler):
                     if new_file.endswith(".pdf"):
                         new_file_path = os.path.join(self.paper_analyzer.paper_dir, new_file)
                         new_file_path = os.path.abspath(new_file_path)
-                        results = self.notion_manager.register_paper_info_by_path(new_file_path)
+                        keywords = self.paper_analyzer.get_keywords(new_file_path)
+                        results = self.notion_manager.register_paper_info_by_path(new_file_path, keywords)
                         for key, value in results.items():
                             if value:
                                 self.slack_messenger.send_message(
