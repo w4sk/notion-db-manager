@@ -14,7 +14,7 @@ class PaperAnalyzer:
         new_file = []
         if not os.path.exists(self.paper_dir):
             raise FileNotFoundError(f"Directory not found: {self.paper_dir}")
-        
+
         threshold_time = time.time() - duration.total_seconds()
         with os.scandir(self.paper_dir) as entries:
             for entry in entries:
@@ -26,9 +26,10 @@ class PaperAnalyzer:
                     if file_time >= threshold_time:
                         new_file.append(entry.name)
         return new_file
+
     def get_keywords(self, path):
         pdf_path = path
-        HEADER_PATTERN = re.compile(r'(?:\bkey\s*[-\s]*word(?:s)?\b|\bkey\b|Index Terms)', re.IGNORECASE)
+        HEADER_PATTERN = re.compile(r"(?:\bkey\s*[-\s]*word(?:s)?\b|\bkey\b|Index Terms)", re.IGNORECASE)
         origin = fitz.open(pdf_path)
 
         if len(origin) > 0:
@@ -51,7 +52,7 @@ class PaperAnalyzer:
                     # print(line)
                 m = HEADER_PATTERN.search(line)
                 if m:
-                    line = line[m.end():].lstrip("—: ").strip()
+                    line = line[m.end() :].lstrip("—: ").strip()
                     section_text += " " + line
             else:
                 if stripped_line == "":
@@ -62,21 +63,17 @@ class PaperAnalyzer:
         洗浄してトークン化
         """
         # 改行時のハイフンやイコール記号の除去
-        section_text = re.sub(r'-\s+', '', section_text)
-        section_text = re.sub(r'=\s*', '', section_text)
+        section_text = re.sub(r"-\s+", "", section_text)
+        section_text = re.sub(r"=\s*", "", section_text)
 
-
-        s = section_text.replace('\n', ' ').strip()
-        words = re.split(r'[\s_-]+', s)
+        s = section_text.replace("\n", " ").strip()
+        words = re.split(r"[\s_-]+", s)
         words = [word for word in words if word]
-        section_text =  ''.join(word.capitalize() for word in words)
+        section_text = "".join(word.capitalize() for word in words)
 
         print(section_text)
 
         tokens = re.split(r"[;,]", section_text)
-
-        print(tokens)
-
 
         end_flg = False
         keywords = []
@@ -86,21 +83,21 @@ class PaperAnalyzer:
             if not token:
                 continue
 
-            if 'I.I' in token:
-                token = token.split('I.I')[0].strip()
+            if "I.I" in token:
+                token = token.split("I.I")[0].strip()
                 # keywords.append(token)
                 end_flg = True
-            if '.' in token:
-                token = token.split('.')[0].strip()
+            if "." in token:
+                token = token.split(".")[0].strip()
                 # keywords.append(token)
                 end_flg = True
 
-            if 'Acm' in token:
-                token = token.split('Acm')[0].strip()
+            if "Acm" in token:
+                token = token.split("Acm")[0].strip()
                 # keywords.append(token)
                 end_flg = True
-            if '1' in token:
-                token = token.split('1')[0].strip()
+            if "1" in token:
+                token = token.split("1")[0].strip()
                 # keywords.append(token)
                 end_flg = True
 
@@ -109,7 +106,6 @@ class PaperAnalyzer:
             if count_upper >= 7:
                 break
 
-            
             keywords.append(token)
             # キーワードがｎ個以上 or endフラグ立ってたら終了
             if len(keywords) >= 15 or end_flg:
@@ -117,4 +113,4 @@ class PaperAnalyzer:
         if len(keywords) == 0:
             keywords.append("None")
 
-        print(keywords)
+        return keywords

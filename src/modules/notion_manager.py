@@ -47,7 +47,6 @@ class NotionManager:
             paths = paths.split(",") if "," in paths else [paths]
             results = {}
             for path in paths:
-
                 result = add_records_from_local_pdfpath(
                     self.database, self.config["propnames"], path, self.config["misc"]["registered_by"], keywords
                 )
