@@ -9,7 +9,9 @@ services:
       - ./src:/app/src
       - ./papers:/app/papers
     command: python src/main.py
-    # command: bash -c 'tail -f /dev/null'
+    # depends_on:
+    #   db:
+    #     condition: service_healthy
     restart: always
 
 # If you want to use a database, uncomment the following lines
