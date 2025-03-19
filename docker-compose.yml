@@ -8,7 +8,8 @@ services:
     volumes:
       - ./src:/app/src
       - ./papers:/app/papers
-    command: python src/main.py
+    # command: python src/main.py
+    command: bash -c "tail -f /dev/null"
     restart: always
     profiles:
       - app
