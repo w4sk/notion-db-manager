@@ -2,6 +2,7 @@ import os
 import requests
 import subprocess
 from dotenv import load_dotenv
+from notion_client import Client
 
 from papnt.papnt.misc import load_config
 from papnt.papnt.database import Database, DatabaseInfo
@@ -22,12 +23,13 @@ class NotionManager:
         self.notion_database_id = os.getenv("NOTION_DATABASE_ID")
         self.config = load_config("/usr/local/lib/python3.11/site-packages/papnt/config.ini")
         self.database = Database(DatabaseInfo(path_config="/usr/local/lib/python3.11/site-packages/papnt/config.ini"))
+        self.client = Client(auth=self.notion_token_id)
 
-    def register_paper_info_by_doi(self):
+    def register_paper_info_by_doi(self, doi, registered_by=""):
         try:
             print("Registering paper info by DOI...")
-            process = subprocess.run("papnt doi", capture_output=True, text=True, check=True, shell=True)
-            print(process.stdout)
+            self.database.create({"DOI": {"rich_text": [{"text": {"content": doi}}]}})
+            update_unchecked_records_from_doi(self.database, self.config["propnames"], registered_by)
             print(f"Succesfully registered paper info by DOI")
         except Exception as e:
             print(f"Error: {e}")
@@ -41,14 +43,15 @@ class NotionManager:
         except Exception as e:
             print(f"Error: {e}")
 
-    def register_paper_info_by_path(self, paths, keywords):
+    def register_paper_info_by_path(self, paths, keywords, pdf_url):
         try:
             print("Registering paper info by path...")
             paths = paths.split(",") if "," in paths else [paths]
             results = {}
+            pdf_url = pdf_url if pdf_url else ""
             for path in paths:
                 result = add_records_from_local_pdfpath(
-                    self.database, self.config["propnames"], path, self.config["misc"]["registered_by"], keywords
+                    self.database, self.config["propnames"], path, self.config["misc"]["registered_by"], keywords, pdf_url
                 )
                 results.update(result)
             return results
@@ -56,7 +59,7 @@ class NotionManager:
             print(f"An unexpected error occurred: {e}")
             return None
 
-    def get_registered_paper_info(self):
+    def get_registered_paper_info(self, use_is_checked=False):
         try:
             url = f"https://api.notion.com/v1/databases/{self.notion_database_id}/query"
             headers = {
@@ -64,8 +67,14 @@ class NotionManager:
                 "Content-Type": "application/json",
                 "Notion-Version": "2022-06-28",
             }
+            data = {}
+            if use_is_checked:
+                data["filter"] = {
+                    "property": "info",
+                    "checkbox": {"equals": False},
+                }
 
-            response = requests.post(url, headers=headers)
+            response = requests.post(url, headers=headers, json=data)
             response.raise_for_status()
 
             results = response.json()["results"]
@@ -92,6 +101,20 @@ class NotionManager:
                     ),
                 }
                 paper_info_list.append(paper_info)
+            print(f"registered paper num: {len(paper_info_list)}")
             return paper_info_list
         except Exception as e:
             print(f"Error occurred when getting registered paper DOI: {e}")
+
+    def delete_paper_records(self, paper_ids):
+        try:
+            for paper_id in paper_ids:
+                result = self.client.pages.update(
+                    parent={"database_id": self.notion_database_id}, page_id=paper_id, archived=True
+                )
+                if result.get("archived") == True:
+                    print(f"Successfully archived paper ID: {paper_id}")
+                else:
+                    print(f"Failed to archive paper ID: {paper_id}")
+        except Exception as e:
+            print(f"Error occurred when deleting paper records: {e}")

@@ -20,8 +20,13 @@ class SlackMessenger:
         return res["channel"]["id"]
 
     def upload_file(self, file_path, title, initial_comment, user_ids):
+        if not user_ids:
+            user_ids = self.get_user_ids()
         dm_channel_id = self.open_conversation(user_ids)
-        self.client.files_upload_v2(channel=dm_channel_id, file=file_path, title=title, initial_comment=initial_comment)
+        result = self.client.files_upload_v2(
+            channel=dm_channel_id, file=file_path, title=title, initial_comment=initial_comment
+        )
+        return result
 
     def send_message(self, message, user_ids=None):
         user_ids = user_ids if user_ids else self.get_user_ids()

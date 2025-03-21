@@ -9,24 +9,17 @@ services:
       - ./src:/app/src
       - ./papers:/app/papers
     command: python src/main.py
-    # depends_on:
-    #   db:
-    #     condition: service_healthy
     restart: always
+    profiles:
+      - app
 
-# If you want to use a database, uncomment the following lines
-  # db:
-  #   image: postgres:13
-  #   container_name: notion-db-manager-postgres
-  #   env_file:
-  #     - .env
-  #   volumes:
-  #     - ./postgres_data:/var/lib/postgresql/data
-  #   healthcheck:
-  #     test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
-  #   ports:
-  #     - "15432:5432"
-  #   restart: always
+  admin-app:
+    build: .
+    image: notion-db-manager-admin
+    container_name: notion-db-manager-admin-app
+    volumes:
+      - ./src:/app/src
+    command: python src/admin.py
+    restart: always
+    profiles:
+      - admin-app
