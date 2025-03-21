@@ -43,7 +43,7 @@ class NotionManager:
         except Exception as e:
             print(f"Error: {e}")
 
-    def register_paper_info_by_path(self, paths, pdf_url):
+    def register_paper_info_by_path(self, paths, keywords, pdf_url):
         try:
             print("Registering paper info by path...")
             paths = paths.split(",") if "," in paths else [paths]
@@ -51,7 +51,7 @@ class NotionManager:
             pdf_url = pdf_url if pdf_url else ""
             for path in paths:
                 result = add_records_from_local_pdfpath(
-                    self.database, self.config["propnames"], path, self.config["misc"]["registered_by"], pdf_url
+                    self.database, self.config["propnames"], path, self.config["misc"]["registered_by"], keywords, pdf_url
                 )
                 results.update(result)
             return results
