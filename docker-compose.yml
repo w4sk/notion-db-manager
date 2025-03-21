@@ -8,8 +8,7 @@ services:
     volumes:
       - ./src:/app/src
       - ./papers:/app/papers
-    # command: python src/main.py
-    command: bash -c "tail -f /dev/null"
+    command: python src/main.py
     restart: always
     profiles:
       - app
@@ -20,8 +19,7 @@ services:
     container_name: notion-db-manager-admin-app
     volumes:
       - ./src:/app/src
-    command: bash -c "tail -f /dev/null"
-    # command: python src/admin.py
+    command: python src/admin.py
     restart: always
     profiles:
       - admin-app
