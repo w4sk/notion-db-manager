@@ -51,7 +51,12 @@ class NotionManager:
             pdf_url = pdf_url if pdf_url else ""
             for path in paths:
                 result = add_records_from_local_pdfpath(
-                    self.database, self.config["propnames"], path, self.config["misc"]["registered_by"], keywords, pdf_url
+                    self.database,
+                    self.config["propnames"],
+                    path,
+                    self.config["misc"]["registered_by"],
+                    keywords,
+                    pdf_url,
                 )
                 results.update(result)
             return results
@@ -98,6 +103,9 @@ class NotionManager:
                         result["properties"]["file_name"]["rich_text"][0]["plain_text"]
                         if result["properties"]["file_name"]["rich_text"]
                         else None
+                    ),
+                    "pdf_url": (
+                        result["properties"]["pdf_url"]["url"] if result["properties"]["pdf_url"]["url"] else None
                     ),
                 }
                 paper_info_list.append(paper_info)
