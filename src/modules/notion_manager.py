@@ -109,7 +109,6 @@ class NotionManager:
                     ),
                 }
                 paper_info_list.append(paper_info)
-            print(f"registered paper num: {len(paper_info_list)}")
             return paper_info_list
         except Exception as e:
             print(f"Error occurred when getting registered paper DOI: {e}")
