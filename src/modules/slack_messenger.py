@@ -42,11 +42,10 @@ class SlackMessenger:
         dm_channel_id = self.open_conversation(user_ids)
         self.client.chat_postMessage(channel=dm_channel_id, text=message)
 
-    def send_message_to_channel(self, message, channel_name=None):
-        if not channel_name:
-            channel_name = self.channel_id
-        print(f"channel_id: {channel_name}")
-        self.client.chat_postMessage(channel=channel_name, text=message)
+    def send_message_to_channel(self, message, channel_id=None):
+        if not channel_id:
+            channel_id = self.channel_id
+        self.client.chat_postMessage(channel=channel_id, text=message)
 
     def get_bookmark_list(self):
         channel_id = self.channel_id_for_personal
