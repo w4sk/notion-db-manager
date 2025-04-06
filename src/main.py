@@ -29,7 +29,7 @@ class PaperHandler(FileSystemEventHandler):
                         new_file_path = os.path.join(self.paper_analyzer.paper_dir, new_file)
                         new_file_path = os.path.abspath(new_file_path)
                         keywords = self.paper_analyzer.get_keywords(new_file_path)
-                        file_upload_result = self.slack_messenger.upload_file(
+                        file_upload_result = self.slack_messenger.upload_file_to_dm(
                             file_path=new_file_path,
                             title=new_file,
                             initial_comment="Attempting to register the following paper",
@@ -41,11 +41,11 @@ class PaperHandler(FileSystemEventHandler):
                         paper_register_results = self.notion_manager.register_paper_info_by_path(new_file_path, keywords, pdf_url)
                         for key, value in paper_register_results.items():
                             if value:
-                                self.slack_messenger.send_message(
+                                self.slack_messenger.send_message_to_dm(
                                     f"Successfully registered new paper in Notion: <{self.notion_manager.notion_database_url}|{key}>"
                                 )
                             else:
-                                self.slack_messenger.send_message(
+                                self.slack_messenger.send_message_to_dm(
                                     f"Cannot register paper: {key}\nPlease register by yourself from <{self.notion_manager.notion_database_url}|here>"
                                 )
 

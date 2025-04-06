@@ -17,7 +17,9 @@ class Admin:
             paper_ids = []
             duplicate_paper_ids = []
             registered_papers = self.notion_manager.get_registered_paper_info()
+            registered_papers = sorted(registered_papers, key=lambda x: not bool(x.get("pdf_url")))
             for registered_paper in registered_papers:
+                print(f"registered_paper: {registered_paper}")
                 if registered_paper["doi"] in paper_ids:
                     duplicate_paper_ids.append(registered_paper["id"])
                 paper_ids.append(registered_paper["doi"])
@@ -43,6 +45,6 @@ def admin_job(admin: Admin):
 if __name__ == "__main__":
     admin = Admin()
     # scheduler = BackgroundScheduler()
-    # scheduler.add_job(admin_job, 'cron', hour=2, minute=0)
+    # scheduler.add_job(admin_job, "cron", args=[admin], hour=2, minute=0)
     # scheduler.start()
     admin_job(admin)
