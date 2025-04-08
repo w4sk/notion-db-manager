@@ -1,5 +1,4 @@
 import os
-import threading
 from dotenv import load_dotenv
 from modules.paper_analyzer import PaperAnalyzer
 from modules.notion_manager import NotionManager
@@ -35,8 +34,7 @@ class PaperHandler(FileSystemEventHandler):
                             initial_comment="Attempting to register the following paper",
                         )
                         if file_upload_result["ok"]:
-                            print(f"File uploaded successfully: {file_upload_result}")
-                            pdf_url = file_upload_result["file"]["url_private"]
+                            pdf_url = file_upload_result["file"]["permalink"]
                             print(f"Uploaded PDF URL: {pdf_url}")
                         paper_register_results = self.notion_manager.register_paper_info_by_path(
                             new_file_path, keywords, pdf_url
