@@ -40,13 +40,13 @@ class PaperHandler(FileSystemEventHandler):
                             new_file_path, keywords, pdf_url
                         )
                         for key, value in paper_register_results.items():
-                            if value:
+                            if value is not None:
                                 self.slack_messenger.send_message_to_channel(
-                                    f"Successfully registered new paper in Notion: <{self.notion_manager.notion_database_url}|{key}>"
+                                    f"Successfully registered new paper in Notion: <{value}|{key}>"
                                 )
                             else:
                                 self.slack_messenger.send_message_to_channel(
-                                    f"Cannot register paper: {key}\nPlease register by yourself from <{self.notion_manager.notion_database_url}|here>"
+                                    f"Cannot register paper: {key}\nPlease register by yourself from <{value}|here>"
                                 )
 
         try:
